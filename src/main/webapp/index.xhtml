@@ -1,0 +1,211 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html" template="layout/template.xhtml">
+
+	<ui:define name="head">
+		<f:loadBundle var="index" basename="com.redhat.training.i18n.index" />
+		<!-- start slider -->
+		<h:outputStylesheet library="css" name="fwslider.css" />
+		<h:outputScript library="js" name="fwslider.js" />
+		<h:outputScript library="js" name="jquery-ui.min.js" />
+
+
+		<!--end slider -->Ï
+	</ui:define>
+	<ui:define name="content">
+		<div class="container">
+			<div class="main">
+				<div class="row content_top">
+					<div class="col-md-9 content_left">
+						<!-- start slider -->
+
+						<div id="fwslider">
+							<div class="slider_container">
+								<div class="slide">
+									<!-- Slide image -->
+									<img src="images/books.jpg" class="img-responsive" alt="" />
+									<!-- /Slide image -->
+								</div>
+
+								<div class="slide">
+									<img src="images/library.jpg" class="img-responsive" alt="" />
+								</div>
+
+								<div class="slide">
+									<img src="images/boyread.jpg" class="img-responsive" alt="" />
+								</div>
+
+								<div class="slide">
+									<img src="images/library2.jpg" class="img-responsive" alt="" />
+								</div>
+
+								<!--/slide -->
+							</div>
+
+							<div class="timers"></div>
+
+							<div class="slidePrev"></div>
+
+							<div class="slideNext"></div>
+						</div>
+						<!-- end  slider -->
+					</div>
+
+					<div class="col-md-3 sidebar">
+						<div class="grid_list">
+							<a href="details.xhtml"></a>
+
+							<div class="grid_img">
+								<img src="images/grid-child.jpg" class="img-responsive" alt="" />
+							</div>
+
+							<div class="grid_text left">
+								<h3>
+									<h:form>
+										<h:commandLink action="#{shoppingCart.applyPromo('kid10')}"> extra 10 <sub>%</sub> off</h:commandLink>
+									</h:form>
+								</h3>
+
+								<p>
+									<h:outputText value="#{index['index.label.children.book']}" />
+								</p>
+							</div>
+
+							<div class="clearfix"></div>
+						</div>
+
+						<div class="grid_list">
+							<a href="details.xhtml"></a>
+
+							<div class="grid_text-middle">
+								<h3>
+									<a href="#"><h:outputText
+											value="#{index['index.label.crafts']}" /></a>
+								</h3>
+
+								<p>
+									<h:outputText value="#{index['index.label.craft.books']}" />
+								</p>
+							</div>
+
+							<div class="grid_img last">
+								<img src="images/scissors.png" class="img-responsive" alt="" />
+							</div>
+
+							<div class="clearfix"></div>
+						</div>
+
+						<div class="grid_list">
+							<a href="details.xhtml"></a>
+
+							<div class="grid_img">
+								<img src="images/war.gif" class="img-responsive" alt="" />
+							</div>
+
+							<div class="grid_text left">
+								<h3>
+									<a href="#"><h:outputText
+											value="#{index['index.label.history.war']}" /></a>
+								</h3>
+
+								<p>
+									<h:outputText value="#{index['index.label.shop.now']}" />
+								</p>
+							</div>
+
+							<div class="clearfix"></div>
+						</div>
+					</div>
+
+					<div class="clearfix"></div>
+				</div>
+				<!-- start content -->
+
+				<div class="content">
+
+					<!-- grids_of_3 -->
+					<h:form id="category">
+						<div class="row grids">
+							<div class="col-md-3 grid1">
+								<h:commandLink
+									action="#{catalogInquiry.byCategory('comics',false)}">
+									<img src="images/books/CameraComics.jpg" class="img-responsive"
+										alt="" />
+								</h:commandLink>
+
+								<div class="look">
+									<h4>
+										<h:outputText value="#{index['index.label.comic.books']}" />
+									</h4>
+
+									<p>
+										<h:outputText value="#{index['index.label.learn.more']}" />
+									</p>
+								</div>
+							</div>
+
+							<div class="col-md-3 grid1">
+								<h:commandLink
+									action="#{catalogInquiry.byCategory('crafts',false)}">
+									<img src="images/books/FancyStitchery.jpg"
+										class="img-responsive" alt="" />
+								</h:commandLink>
+
+								<div class="look">
+									<h4>
+										<h:outputText value="#{index['index.label.crafts']}" />
+									</h4>
+
+									<p>
+										<h:outputText value="#{index['index.label.learn.more']}" />
+									</p>
+								</div>
+							</div>
+
+							<div class="col-md-3 grid1">
+								<h:commandLink
+									action="#{catalogInquiry.byCategory('children',false)}">
+									<img src="images/books/JemimaPuddleDuck.jpg"
+										class="img-responsive" alt="" />
+								</h:commandLink>
+
+								<div class="look">
+									<h4>
+										<h:outputText value="#{index['index.label.childrens.book']}" />
+									</h4>
+
+									<p>
+										<h:outputText value="#{index['index.label.learn.more']}" />
+									</p>
+								</div>
+							</div>
+
+							<div class="col-md-3 grid1">
+								<h:commandLink action="#{catalogInquiry.allItems}">
+									<img src="images/books/MaryFrancesHousekeeper.jpg"
+										class="img-responsive" alt="" />
+								</h:commandLink>
+
+								<div class="look">
+									<h4>
+										<h:outputText value="#{index['index.label.all.books']}" />
+									</h4>
+
+									<p>
+										<h:outputText value="#{index['index.label.learn.more']}" />
+									</p>
+								</div>
+							</div>
+						</div>
+					</h:form>
+					<!-- end grids_of_3 -->
+				</div>
+				<!-- end content -->
+			</div>
+		</div>
+
+	</ui:define>
+</ui:composition>

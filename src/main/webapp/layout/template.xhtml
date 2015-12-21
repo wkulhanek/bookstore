@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<f:view xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html" contentType="text/html">
+	<f:loadBundle basename="com.redhat.training.i18n.bookstore" var="i18n"/>
+	<h:head>
+		<title>The Shoppe</title>
+		<h:outputStylesheet library="css" name="bootstrap.css" />
+		<h:outputStylesheet library="css" name="jquery-ui.min.css" />
+		<h:outputStylesheet library="css" name="fonts.css" />
+		<h:outputStylesheet library="css" name="style.css" />
+		<h:outputStylesheet library="css" name="megamenu.css" />
+		<!-- jQuery -->
+		<h:outputScript library="js" name="jquery-1.11.1.min.js" />
+		<!-- jQuery UI -->
+		<h:outputScript library="js" name="jquery-ui.min.js" />
+		<h:outputScript library="js" name="megamenu.js" />
+		<h:outputScript library="js" name="menu_jquery.js" />
+
+		<!-- Custom Theme files -->
+		<!-- Custom Theme files -->
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<meta http-equiv="cache-control" content="no-cache" />
+
+		<ui:insert name="head" />
+	</h:head>
+	<h:body>
+		<script type="text/javascript">
+  $(document).ready(function(){$(".megamenu").megamenu();});
+        </script>
+		<div id="fb-root"></div>
+		<!--Facebook API -->
+		<script>(function(d, s, id) {
+  					var js, fjs = d.getElementsByTagName(s)[0];
+  					if (d.getElementById(id)) return;
+  					js = d.createElement(s); js.id = id;
+  					js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&amp;version=v2.3";
+  					fjs.parentNode.insertBefore(js, fjs);
+				}(document, 'script', 'facebook-jssdk'));</script>
+		<!--Twitter API -->
+		<script>window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));</script>
+		
+		<!-- header_top -->
+		<div class="top_bg">
+			<div class="container">
+				<div class="header_top">
+					<div class="top_left">
+						<h2>
+							<h:form>
+								<h:panelGroup>
+									<h:commandLink value="50%off"
+										action="#{shoppingCart.applyPromo('big61')}" /> <h:outputText value="#{i18n['template.greeting.get.50.off']}" />
+							</h:panelGroup>
+							</h:form>
+						</h2>
+					</div>
+
+					<div class="top_right">
+						<ul>
+							<li><h:form id="viewed">
+									<h:commandLink action="#{catalogInquiry.recentlyViewed}"
+										value="#{i18n['template.greeting.recently.viewed']}" id="review" />
+								</h:form></li>
+
+							<li>
+								<h:outputLink value="contact.xhtml">
+							 		<h:outputText value="#{i18n['template.greeting.contact']}" />
+							 	</h:outputLink>
+							 </li>
+
+							<li class="login">
+								<div id="loginContainer">
+									<h:panelGroup rendered="#{not shoppingCart.loggedIn}">
+										<a href="#" id="loginButton"><span><h:outputText value="#{i18n['template.greeting.sign.in']}"/></span></a>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{shoppingCart.loggedIn}">
+										<a href="#" id="logoutButton">
+										<span>
+											<h:outputFormat value="#{i18n['template.greeting.message']}" >
+												<f:param value="#{shoppingCart.customer.firstName}" />	
+											</h:outputFormat>
+										</span></a>
+									</h:panelGroup>
+
+									<div id="loginBox">
+										<h:form id="loginForm">
+											<fieldset id="body">
+												<fieldset>
+													<h:outputLabel value="#{i18n['template.greeting.username']}" id="usernameLabel" for="username" />
+													<h:inputText id="username" value="#{identity.username}" />
+												</fieldset>
+
+												<fieldset>
+													<h:outputLabel value="#{i18n['template.greeting.password']}" for="password" />
+													<h:inputSecret id="password" value="#{identity.password}" />
+												</fieldset>
+												<h:commandButton id="login" value="#{i18n['template.greeting.sign.in']}" action="#{identity.login}" />
+												
+													<h:selectBooleanCheckbox value="#{identity.rememberMe}" />
+														<i><h:outputLabel value="#{i18n['template.greeting.remember.me']}" /></i>
+											</fieldset>
+										</h:form>
+										<span><a href="#"><h:outputText value="#{i18n['template.greeting.forgot.password']}" /></a></span>
+									</div>
+								</div>
+							</li>
+							<h:panelGroup rendered="#{shoppingCart.loggedIn}">
+							|
+							<li><h:form id="logout">
+										<h:commandLink action="#{shoppingCart.logout}" value="#{i18n['template.greeting.logout']}" />
+									</h:form></li>
+							</h:panelGroup>
+						</ul>
+					</div>
+
+					<div class="clearfix"></div>
+				</div>
+			</div>
+		</div>
+
+		<!-- header -->
+		<div class="header_bg">
+			<div class="container">
+				<div class="header">
+					<div class="logo">
+						<h:form id="bookshopLogoForm">
+							<h:outputLink id="logoImageLink" value="index.xhtml">
+								<h:graphicImage id="logoImage" url="/images/shoppe-logo.png" />
+							</h:outputLink>
+						</h:form>
+					</div>
+					<!-- start header_right -->
+					<div class="header_right">
+						<h:panelGroup rendered="#{not shoppingCart.loggedIn}">
+							<div class="create_btn">
+								<h:outputLink styleClass="arrow" value="registration.xhtml">
+									<h:outputText value="#{i18n['template.greeting.create.account']}" /> 
+									<img src="images/right_arrow.png" alt="" />
+								</h:outputLink>
+							</div>
+						</h:panelGroup>
+
+						<ul class="icon1 sub-icon1 profile_img">
+							<li><a class="active-icon c2" href="#"></a>
+								<ul class="sub-icon1 list">
+									<h:panelGroup rendered="#{shoppingCart.items.size() == 0}">
+
+										<li>
+											<h3><h:outputText value="#{i18n['template.greeting.shopping.cart.empty']}" /> </h3> <a href=""></a>
+										</li>
+
+										<li>
+											<p><h:outputText value="#{i18n['template.greeting.shopping.cart.suggestion']}" /> </p>
+										</li>
+
+									</h:panelGroup>
+									<h:form id="minicart">
+										<h:dataTable value="#{shoppingCart.items}" var="item"
+											rendered="#{shoppingCart.items.size() > 0}">
+											<h:column>
+												<li>
+													<p>
+														<h:graphicImage value="#{item.imagePath}" width="20%" />
+													</p>
+												</li>
+											</h:column>
+											<h:column>
+												<li>
+													<p>
+														<h:commandLink action="#{catalogInquiry.pickItem(item)}">
+															<h:outputText value="#{item.title}" />
+														</h:commandLink>
+													</p>
+												</li>
+											</h:column>
+
+										</h:dataTable>
+										<li>
+											<div class="btn_form">
+
+												<h:commandLink action="buy" value="#{i18n['template.greeting.shopping.cart']}"
+													style="margin-left: 25px;" />
+
+											</div>
+										</li>
+									</h:form>
+								</ul></li>
+						</ul>
+
+						<ul class="icon1 sub-icon1 profile_img">
+							<li><a class="active-icon c1" href="#"></a>
+
+								<ul class="sub-icon1 list">
+									<h:panelGroup
+										rendered="#{shoppingCart.wishlist==null or shoppingCart.wishlist.size() == 0}">
+
+										<li>
+											<h3><h:outputText value="#{i18n['template.greeting.wishlist.empty']}" /></h3> <a href=""></a>
+										</li>
+
+										<li>
+											<p><h:outputText value="#{i18n['template.greeting.wishlist.suggestion']}" /></p>
+										</li>
+
+									</h:panelGroup>
+									<h:form id="wishlist">
+										<h:dataTable value="#{shoppingCart.wishlist}" var="item"
+											rendered="#{shoppingCart.wishlist.size() > 0}">
+											<h:column>
+												<li>
+													<p>
+														<h:graphicImage value="#{item.imagePath}" width="20%" />
+													</p>
+												</li>
+											</h:column>
+											<h:column>
+												<li>
+													<p>
+														<h:commandLink
+															action="#{catalogInquiry.pickItem(item)}">
+															<h:outputText value="#{item.title}" />
+														</h:commandLink>
+													</p>
+												</li>
+											</h:column>
+											<h:column>
+												<li>
+													<p>
+														<h:commandLink
+															action="#{shoppingCart.moveFromWishlist(item)}" value="#{i18n['template.greeting.menu.buy']}"/>
+													</p>
+												</li>
+											</h:column>
+										</h:dataTable>
+									</h:form>
+								</ul></li>
+						</ul>
+
+						<div class="search">
+							<h:form id="search">
+								<h:inputText id="searchCriteria"
+									value="#{catalogInquiry.searchCriteria}" />
+								<h:commandButton id="searchButton" value=""
+									action="#{catalogInquiry.search()}" />
+							</h:form>
+						</div>
+						<script>
+						$('#search\\:searchCriteria').attr("placeholder","#{i18n['template.greeting.search']}")
+						</script>
+
+						<div class="clearfix"></div>
+					</div>
+					<ul class="megamenu skyblue">
+						<li><a class="color1" href="faces/index.xhtml"><h:outputText value="#{i18n['template.greeting.menu.home']}"/></a></li>
+
+						<li class="grid"><a class="color2" href="#"><h:outputText value="#{i18n['template.greeting.menu.new.arrivals']}"/></a>
+
+							<div class="megapanel">
+								<div class="row">
+									<div class="col1">
+										<div class="h_nav">
+											<h4><h:outputText value="#{i18n['template.greeting.menu.shop']}" /></h4>
+
+											<ul>
+												<h:form id="shopLinks">
+													<li><h:commandLink id="child-new"
+															action="#{catalogInquiry.byCategory('children',true)}"
+															value="#{i18n['template.greeting.menu.shop.children']}" /></li>
+													<li><h:commandLink id="crafts-new"
+															action="#{catalogInquiry.byCategory('crafts',true)}"
+															value="#{i18n['template.greeting.menu.shop.crafts']}" /></li>
+													<li><h:commandLink id="comics-new"
+															action="#{catalogInquiry.byCategory('comics',true)}"
+															value="#{i18n['template.greeting.menu.shop.comics']}" /></li>
+													<li><h:commandLink id="all-new"
+															action="#{catalogInquiry.newArrivals}" value="all" /></li>
+												</h:form>
+											</ul>
+										</div>
+									</div>
+
+									<div class="col1">
+										<div class="h_nav">
+											<h4><h:outputText value="#{i18n['template.greeting.menu.account']}" /></h4>
+
+											<ul>
+												<h:panelGroup rendered="#{not shoppingCart.loggedIn}">
+													<li><a href="registration.xhtml">login</a></li>
+												</h:panelGroup>
+												<li>
+												<h:outputLink value="registration.xhtml">
+													<h:outputText value="#{i18n['template.greeting.create.account']}" />
+												</h:outputLink>
+												</li>
+												<li><h:outputLink value="buy.xhtml">
+													<h:outputText value="#{i18n['template.greeting.shopping.cart']}" />
+												</h:outputLink></li>
+											</ul>
+										</div>
+									</div>
+
+								</div>
+
+								<div class="row">
+									<div class="col2"></div>
+									<div class="col1"></div>
+									<div class="col1"></div>
+									<div class="col1"></div>
+									<div class="col1"></div>
+								</div>
+							</div></li>
+
+						<li class="grid"><a class="color3" href="#"><h:outputText value="#{i18n['template.greeting.menu.category']}" /></a>
+
+							<div class="megapanel">
+								<div class="row">
+									<div class="col1">
+										<div class="h_nav">
+											<h4><h:outputText value="#{i18n['template.greeting.menu.shop']}" /></h4>
+
+											<ul>
+												<h:form id="catLinks">
+													<li><h:commandLink id="child"
+															action="#{catalogInquiry.byCategory('children',false)}"
+															value="#{i18n['template.greeting.menu.shop.children']}" /></li>
+													<li><h:commandLink id="crafts"
+															action="#{catalogInquiry.byCategory('crafts',false)}"
+															value="#{i18n['template.greeting.menu.shop.crafts']}" /></li>
+													<li><h:commandLink id="comics"
+															action="#{catalogInquiry.byCategory('comics',false)}"
+															value="#{i18n['template.greeting.menu.shop.comics']}" /></li>
+													<li><h:commandLink id="all"
+															action="#{catalogInquiry.allItems}" value="all" /></li>
+												</h:form>
+											</ul>
+										</div>
+									</div>
+
+									<div class="col1">
+										<div class="h_nav">
+											<h4><h:outputText value="#{i18n['template.greeting.menu.account']}" /></h4>
+
+											<ul>
+												<h:panelGroup rendered="#{not shoppingCart.loggedIn}">
+													<li><a href="registration.xhtml">login</a></li>
+												</h:panelGroup>
+												<li>
+												<h:outputLink value="registration.xhtml">
+													<h:outputText value="#{i18n['template.greeting.create.account']}" />
+												</h:outputLink>
+												</li>
+												<li><h:outputLink value="buy.xhtml">
+													<h:outputText value="#{i18n['template.greeting.shopping.cart']}" />
+												</h:outputLink></li>
+											</ul>
+										</div>
+									</div>
+
+								</div>
+
+								<div class="row">
+									<div class="col2"></div>
+									<div class="col1"></div>
+									<div class="col1"></div>
+									<div class="col1"></div>
+									<div class="col1"></div>
+								</div>
+							</div></li>
+
+
+						<li><a class="color4" href="contact.xhtml"><h:outputText value="#{i18n['template.greeting.contact']}" /></a>
+
+							<div class="megapanel">
+								<div class="row">
+									<div class="col3">
+										<div class="h_nav">
+											<h4><h:outputText value="#{i18n['template.greeting.contact.us']}"/></h4>
+										</div>
+
+										<h:form id="contact" styleClass="contact">
+											<h:outputLabel value="#{i18n['template.greeting.contact.name']}" for="name" />
+											<h:inputText id="name" styleClass="textbox"
+												value="#{messageContact.contact.name}" />
+											<h:message for="name" />
+											<h:outputLabel value="#{i18n['template.greeting.contact.email']}" for="email" />
+											<h:inputText id="email" styleClass="textbox"
+												value="#{messageContact.contact.email}" />
+											<h:message for="email" />
+											<h:outputLabel value="#{i18n['template.greeting.contact.message']}" for="message" />
+											<h:inputTextarea id="message"
+												value="#{messageContact.contact.message}" cols="1" rows="8" />
+											<h:message for="message" />
+											<h:commandButton value="#{i18n['template.greeting.contact.send']}" action="#{messageContact.send}" />
+										</h:form>
+									</div>
+
+									<div class="col3"></div>
+								</div>
+							</div></li>
+						<h:panelGroup rendered="#{shoppingCart.customer.admin}">
+							<li>
+							<h:outputLink value="admin.xhtml" styleClass="color4">
+								<h:outputText value="#{i18n['template.greeting.menu.administration']}"/> 
+							</h:outputLink>
+
+
+								<div class="megapanel">
+									<div class="row">
+										<div class="col3">
+											<div class="h_nav">
+												<h4><h:outputText value="#{i18n['template.greeting.menu.administration']}" /></h4>
+											</div>
+
+
+											<div class="col1">
+												<div class="h_nav">
+													<h4><h:outputText value="#{i18n['template.greeting.menu.administration']}" /></h4>
+													<ul>
+														<li><h:outputLink value="item.xhtml">
+															<h:outputText value="#{i18n['template.greeting.add.item']}" />
+														</h:outputLink>
+														</li>
+														<li>
+														<h:outputLink value="ordermgmt.xhtml">
+															<h:outputText value="#{i18n['template.greeting.order.mgmt']}'"  />
+														</h:outputLink></li>
+													</ul>
+												</div>
+											</div>
+										</div>
+
+										<div class="col3"></div>
+									</div>
+								</div></li>
+						</h:panelGroup>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+
+		<ui:insert name="content" />
+
+
+		<!-- footer_top -->
+		<div class="footer_top">
+			<div class="container">
+
+				<!-- start span_of_2 -->
+
+				<div class="span_of_2">
+					<div class="span1_of_2">
+						<h5>
+							<h:outputText value="#{i18n['template.greeting.need.help']}" /> 
+							<h:outputLink value="contact.xhtml">
+								<h:outputText value="#{i18n['template.greeting.contact.us']}" />
+							</h:outputLink><span>&gt;</span>
+						</h5>
+
+						<p><h:outputText value="#{i18n['template.greeting.or.call']}" /> +1 999.555.1212</p>
+					</div>
+
+					<div class="span1_of_2">
+						<h5><h:outputText value="#{i18n['template.greeting.follow.us']}"/></h5>
+
+						<div class="social-icons">
+							<ul>
+								<li><div class="fb-share-button"
+										data-href="http://www.redhat.com" data-layout="button_count"></div></li>
+
+								<li><a class="twitter-follow-button"
+									href="https://twitter.com/RedHatNews" data-show-count="true"
+									data-lang="en">Follow @RedHatNews</a></li>
+
+								<li><script src="//platform.linkedin.com/in.js" type="text/javascript"> lang: en_US</script>
+<script type="IN/FollowCompany" data-id="3545" data-counter="right"></script></li>
+
+							</ul>
+						</div>
+					</div>
+
+					<div class="clearfix"></div>
+				</div>
+			</div>
+		</div>
+		<!-- footer -->
+		<div class="footer">
+			<div class="container">
+				<div class="tagline">
+					<h:graphicImage url="/images/logo.png" />
+					<span>Powered by Red Hat</span>
+				</div>
+			</div>
+		</div>
+
+	</h:body>
+</f:view>
+</html>
