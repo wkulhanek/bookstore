@@ -386,13 +386,13 @@
 		<dependency>
 			<groupId>net.sourceforge.htmlunit</groupId>
 			<artifactId>htmlunit</artifactId>
-			<version>2.11</version>
+			<version>2.23</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.htmlunit</groupId>
 			<artifactId>htmlunit-core-js</artifactId>
-			<version>2.11</version>
+			<version>2.23</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
