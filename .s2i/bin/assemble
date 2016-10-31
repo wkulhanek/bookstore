@@ -109,10 +109,10 @@ if [ ! -z "$APPLICATION_ARTIFACT_URL" ]; then
     echo "deploying artifact found at $APPLICATION_ARTIFACT_URL to: $DEPLOY_DIR/$APP_NAME";
     if [ -z "$DOWNLOAD_USER_CREDENTIALS" ];
     then
-        curl -L -o $DEPLOY_DIR/$APP_NAME $APPLICATION_ARTIFACT_URL
+        curl --insecure -L -o $DEPLOY_DIR/$APP_NAME $APPLICATION_ARTIFACT_URL
     else
         echo "downloading artifact with credentials: $DOWNLOAD_USER_CREDENTIALS";
-        curl -L -u $DOWNLOAD_USER_CREDENTIALS -o $DEPLOY_DIR/$APP_NAME $APPLICATION_ARTIFACT_URL
+        curl --insecure -L -u $DOWNLOAD_USER_CREDENTIALS -o $DEPLOY_DIR/$APP_NAME $APPLICATION_ARTIFACT_URL
     fi
 fi
 
