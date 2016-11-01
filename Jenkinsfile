@@ -1,7 +1,7 @@
 #!groovy
 // Set OCP_PROJECT to the name of the OpenShift Project
 // that contains Bookstore
-env.OCP_PROJECT = 'wkappdevocp'
+// env.OCP_PROJECT = 'wkappdevocp'
 
 node {
    stage 'Checkout'
