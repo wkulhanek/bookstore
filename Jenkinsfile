@@ -7,7 +7,7 @@ node {
    stage 'Checkout'
 
    // Get Code from a GitHub repository
-   git url: 'https://github.com/wkulhanek/bookstore.git'
+   // git url: 'https://github.com/wkulhanek/ocp-appdev-bookstore.git'
 
    env.JAVA_HOME = tool 'JDK8'
    
