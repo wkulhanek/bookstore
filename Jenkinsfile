@@ -9,6 +9,8 @@ node {
 
    // Now invoke the Maven Build
    sh "${mvnHome}/bin/mvn clean package -DskipTests"
+
+   stage 'Archive war'
    archive 'target/*.war'
    
 //   stage 'OpenShift Build'
