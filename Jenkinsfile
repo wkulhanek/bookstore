@@ -1,6 +1,9 @@
 #!groovy
 
 node {
+   stage 'Build bookstore'
+   build 'bookstore'
+
    stage 'OpenShift Build'
    openshiftBuild apiURL: '', authToken: '', bldCfg: 'bookstore', checkForTriggeredDeployments: 'false', namespace: OCP_PROJECT, verbose: 'false'
    openshiftVerifyBuild apiURL: '', authToken: '', bldCfg: 'bookstore', checkForTriggeredDeployments: 'false', namespace: OCP_PROJECT, verbose: 'false'
