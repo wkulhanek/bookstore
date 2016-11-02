@@ -13,7 +13,7 @@ node {
 
    // Deploy the created S2I Image
    stage 'OpenShift Deployment'
-   openshiftDeploy apiURL: '', authToken: '', depCfg: 'bookstore', namespace: OCP_PROJECT, verbose: 'false', waitTime: ''
+   openshiftDeploy apiURL: '', authToken: '', depCfg: 'bookstore', namespace: OCP_PROJECT, verbose: 'false', waitTime: '15000'
    openshiftScale apiURL: '', authToken: '', depCfg: 'bookstore', namespace: OCP_PROJECT, replicaCount: '1', verbose: 'false', verifyReplicaCount: 'false'
    openshiftVerifyDeployment apiURL: '', authToken: '', depCfg: 'bookstore', namespace: OCP_PROJECT, replicaCount: '1', verbose: 'false', verifyReplicaCount: 'false', waitTime: ''
 
