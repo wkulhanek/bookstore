@@ -7,6 +7,8 @@ node {
    env.JAVA_HOME = tool 'JDK8'
    def mvnHome = tool 'Maven3'
 
+   scm checkout
+
    // Now invoke the Maven Build
    sh "${mvnHome}/bin/mvn clean package -DskipTests"
 
