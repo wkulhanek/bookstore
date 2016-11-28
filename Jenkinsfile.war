@@ -10,8 +10,8 @@ node('maven') {
    checkout scm
 
    // Now invoke the Maven Build
-   // sh "mvn clean package -DskipTests -s config/nexus-hardcoded-settings.xml"
-   sh "mvn clean package -DskipTests"
+   sh "mvn clean package -DskipTests -s config/nexus-hardcoded-settings.xml"
+   // sh "mvn clean package -DskipTests"
 
    // Second Stage: Save the WAR file for later use
    stage 'Archive war'
