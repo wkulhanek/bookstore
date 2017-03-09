@@ -105,7 +105,7 @@ if [ -d $LOCAL_SOURCE_DIR/bin ]; then
 fi
 
 if [ ! -z "$APPLICATION_ARTIFACT_URL" ]; then
-    APP_NAME=`basename $APPLICATION_ARTIFACT_URL`
+    APP_NAME="ROOT.war"
     echo "deploying artifact found at $APPLICATION_ARTIFACT_URL to: $DEPLOY_DIR/$APP_NAME";
     if [ -z "$DOWNLOAD_USER_CREDENTIALS" ];
     then
