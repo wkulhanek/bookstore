@@ -1,59 +1,81 @@
-#!/bin/sh
+#!/bin/bash
 
-# JA Bride:  now making use of the following environment variables:
+# WK: BEGIN CHANGES
+# WK: Adding support for the following environment variables:
 #
-# 1) DISABLE_ASSET_COMPILATION      :   if set to true, the application's maven build will be skipped even the project has a pom.xml
-#                                       Useful if the JEE application is previously built in a CI/Jenkins environment
+# 1) DISABLE_ASSET_COMPILATION: If set to true, the application's maven build
+#                               will be skipped even if the project has a pom.xml
+#                               Useful if the JEE application is previously built
+#                               in a CI/Jenkins environment
 #
-# 2) APPLICATION_ARTIFACT_URL       :   if set, this script will use curl to download the previously built application artifact.
-#                                       once downloaded, application artifact will be included in the $JBOSS_HOME/standalone/deployments directory
+# 2) APPLICATION_ARTIFACT_URL:  If set, this script will use curl to download the
+#                               previously built application artifact.
+#                               Once downloaded, application artifact will be
+#                               included in the $JBOSS_HOME/standalone/deployments directory
 # 3) DOWNLOAD_USER_CREDENTIALS      :   if set, will utilize this as an argument to curl utility if/when downloading $APPLICATION_ARTIFACT_URL
 #                                       Must be in <user:password> convention
 #
 # JA Bride:  now also copying any files that might exist in this JEE project's bin directory to $JBOSS_HOME/bin
 
 echo DISABLE_ASSET_COMPILATION = $DISABLE_ASSET_COMPILATION
-echo APPLICATION_ARTIFACT_URL = $APPLICATION_ARTIFACT_URL
+echo APPLICATION_ARTIFACT_URL  = $APPLICATION_ARTIFACT_URL
+# WK: END CHANGES
 
-# Source code provided to STI is at ${HOME}/source
+. $(dirname $0)/common.sh
+
+# we will move any code provided by s2i to here
 LOCAL_SOURCE_DIR=${HOME}/source
-mkdir -p $LOCAL_SOURCE_DIR
 
 # Resulting WAR files will be deployed to /opt/eap/standalone/deployments
 DEPLOY_DIR=$JBOSS_HOME/standalone/deployments
 
 # JBoss AS data dir. Can be overridden.
-DATA_DIR=${DATA_DIR-$JBOSS_HOME/data}
+DATA_DIR=${DATA_DIR:-$JBOSS_HOME/data}
 
 # the subdirectory within LOCAL_SOURCE_DIR from where we should copy build
 # artifacts (*.war, *.jar)
-ARTIFACT_DIR=${ARTIFACT_DIR-target}
-
-function copy_artifacts() {
-  if [ -d $LOCAL_SOURCE_DIR/$1 ]; then
-    echo "Copying all WAR and EAR artifacts from $LOCAL_SOURCE_DIR/$1 directory into $DEPLOY_DIR for later deployment..."
-    cp -v $LOCAL_SOURCE_DIR/$1/*.jar $LOCAL_SOURCE_DIR/$1/*.war $LOCAL_SOURCE_DIR/$1/*.ear $DEPLOY_DIR 2> /dev/null
-  fi
-}
+ARTIFACT_DIR=${ARTIFACT_DIR:-target}
 
 # Copy the source for compilation
-cp -ad /tmp/src/* $LOCAL_SOURCE_DIR
+if compgen -G "/tmp/src/*" >/dev/null; then
+  mkdir -p $LOCAL_SOURCE_DIR
+  cp -ad /tmp/src/* $LOCAL_SOURCE_DIR
+fi
+
+if [ -d $LOCAL_SOURCE_DIR/configuration ]; then
+  echo "Copying config files from project..."
+
+  if [ -f $LOCAL_SOURCE_DIR/configuration/settings.xml ]; then
+    mkdir -p $HOME/.m2
+    mv $LOCAL_SOURCE_DIR/configuration/settings.xml $HOME/.m2
+  fi
+
+  cp -v $LOCAL_SOURCE_DIR/configuration/* $JBOSS_HOME/standalone/configuration/
+fi
+
+configure_proxy
+configure_mirrors
+
+manage_incremental_build
 
 # If a pom.xml is present, this is a normal build scenario
 # so run maven.
+# WK: Add check for $DISABLE_ASSET_COMPILATION
 if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ] && [ "$DISABLE_ASSET_COMPILATION" != "true" ]; then
   pushd $LOCAL_SOURCE_DIR &> /dev/null
 
-  if [ -z "$MAVEN_ARGS" ]; then
-    export MAVEN_ARGS="package -Popenshift -DskipTests -Dcom.redhat.xpaas.repo.redhatga"
-  fi
+  MAVEN_ARGS=${MAVEN_ARGS--e -Popenshift -DskipTests -Dcom.redhat.xpaas.repo.redhatga package}
 
-  echo "Found pom.xml... attempting to build with 'mvn -e ${MAVEN_ARGS}'"
+  # Always force IPv4 (CLOUD-188)
+  # Append user-supplied arguments (CLOUD-412)
+  MAVEN_ARGS="$MAVEN_ARGS -Djava.net.preferIPv4Stack=true ${MAVEN_ARGS_APPEND}"
+
+  echo "Found pom.xml... attempting to build with 'mvn ${MAVEN_ARGS}'"
 
   echo "Using $(mvn --version)"
 
   # Execute the actual build
-  mvn -e $MAVEN_ARGS
+  mvn $MAVEN_ARGS
 
   ERR=$?
   if [ $ERR -ne 0 ]; then
@@ -65,7 +87,7 @@ if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ] && [ "$DISABLE_ASSET_COMPILATION" != "true
   # (or $ARTIFACT_DIR if specified)
   # to the $JBOSS_HOME/standalone/deployments/ directory for
   # later deployment
-  copy_artifacts "$ARTIFACT_DIR"
+  copy_artifacts "$ARTIFACT_DIR" war ear rar jar
 
   # copy app data, if specified
   if [ -n "${APP_DATADIR+_}" ] && [ -d "$LOCAL_SOURCE_DIR/$APP_DATADIR" ]; then
@@ -75,45 +97,36 @@ if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ] && [ "$DISABLE_ASSET_COMPILATION" != "true
     cp -av "$src" "$DATA_DIR"
   fi
 
-  # clean up after maven
-  mvn -e -Dcom.redhat.xpaas.repo.redhatga clean
-  if [ -d "$HOME/.m2/repository" ]; then
-    rm -r "$HOME/.m2/repository"
-  fi
+  # optionally clear the local maven repository after the build
+  clear_maven_repository
 
   popd &> /dev/null
+else
+  copy_artifacts "." war ear rar jar
 fi
 
 # Copy (probably binary) artifacts from the deployments/
 # directory to the $JBOSS_HOME/standalone/deployments/
 # directory for later deployment
-copy_artifacts "deployments"
-
-if [ -d $LOCAL_SOURCE_DIR/configuration ]; then
-  echo "Copying config files from project..."
-  cp -v $LOCAL_SOURCE_DIR/configuration/* $JBOSS_HOME/standalone/configuration/
-fi
+copy_artifacts "deployments" war ear rar jar
 
 if [ -d $LOCAL_SOURCE_DIR/modules ]; then
   echo "Copying modules from project..."
   cp -vr $LOCAL_SOURCE_DIR/modules/* $JBOSS_HOME/modules/
 fi
 
-if [ -d $LOCAL_SOURCE_DIR/bin ]; then
-  echo "Copying shell scripts from project bin directory..."
-  cp -vr $LOCAL_SOURCE_DIR/bin/* $JBOSS_HOME/bin/
-fi
-
+# WK: BEGIN CHANGES
 if [ ! -z "$APPLICATION_ARTIFACT_URL" ]; then
-    APP_NAME="ROOT.war"
-    echo "deploying artifact found at $APPLICATION_ARTIFACT_URL to: $DEPLOY_DIR/$APP_NAME";
-    if [ -z "$DOWNLOAD_USER_CREDENTIALS" ];
-    then
-        curl --insecure -L -o $DEPLOY_DIR/$APP_NAME $APPLICATION_ARTIFACT_URL
-    else
-        echo "downloading artifact with credentials: $DOWNLOAD_USER_CREDENTIALS";
-        curl --insecure -L -u $DOWNLOAD_USER_CREDENTIALS -o $DEPLOY_DIR/$APP_NAME $APPLICATION_ARTIFACT_URL
-    fi
+  APP_NAME="ROOT.war"
+  echo "deploying artifact found at $APPLICATION_ARTIFACT_URL to: $DEPLOY_DIR/$APP_NAME";
+  if [ -z "$DOWNLOAD_USER_CREDENTIALS" ];
+  then
+    curl --insecure -L -o $DEPLOY_DIR/$APP_NAME $APPLICATION_ARTIFACT_URL
+  else
+    echo "downloading artifact with credentials: $DOWNLOAD_USER_CREDENTIALS";
+    curl --insecure -L -u $DOWNLOAD_USER_CREDENTIALS -o $DEPLOY_DIR/$APP_NAME $APPLICATION_ARTIFACT_URL
+  fi
 fi
+# WK: END CHANGES
 
 exit 0
