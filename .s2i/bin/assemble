@@ -19,9 +19,10 @@
 
 echo DISABLE_ASSET_COMPILATION = $DISABLE_ASSET_COMPILATION
 echo APPLICATION_ARTIFACT_URL  = $APPLICATION_ARTIFACT_URL
-# WK: END CHANGES
+# . $(dirname $0)/common.sh
+. /usr/local/s2i/common.sh
 
-. $(dirname $0)/common.sh
+# WK: END CHANGES
 
 # we will move any code provided by s2i to here
 LOCAL_SOURCE_DIR=${HOME}/source
