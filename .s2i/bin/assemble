@@ -25,6 +25,8 @@ echo APPLICATION_ARTIFACT_URL  = $APPLICATION_ARTIFACT_URL
 
 # WK: END CHANGES
 
+. /opt/rh/rh-maven33/enable
+
 # we will move any code provided by s2i to here
 LOCAL_SOURCE_DIR=${HOME}/source
 
