@@ -19,6 +19,7 @@
 
 echo DISABLE_ASSET_COMPILATION = $DISABLE_ASSET_COMPILATION
 echo APPLICATION_ARTIFACT_URL  = $APPLICATION_ARTIFACT_URL
+
 # . $(dirname $0)/common.sh
 . /usr/local/s2i/common.sh
 
