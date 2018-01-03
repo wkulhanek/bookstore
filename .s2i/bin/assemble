@@ -28,7 +28,11 @@ if [ "${SCRIPT_DEBUG}" = "true" ] ; then
     echo "Script debugging is enabled, allowing bash commands and their arguments to be printed as they are executed"
 fi
 
-. $(dirname $0)/common.sh
+# WK: BEGIN CHANGES (dirname is /tmp/scripts when using custom scripts)
+# . $(dirname $0)/common.sh
+. /usr/local/s2i/common.sh
+# WK: END CHANGES
+
 . /opt/rh/rh-maven33/enable
 
 LOCAL_SOURCE_DIR=/tmp/src
